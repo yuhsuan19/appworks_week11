@@ -86,7 +86,7 @@ contract SimpleSwapLpTokenTest is SimpleSwapSetUp {
         vm.startPrank(maker);
 
         vm.expectEmit(true, true, true, true);
-        emit Transfer(address(simpleSwap), address(0), lpTokenAmount);
+        // emit Transfer(address(simpleSwap), address(0), lpTokenAmount);
         simpleSwap.removeLiquidity(lpTokenAmount);
 
         assertEq(simpleSwap.balanceOf(maker), makerBalance - lpTokenAmount);

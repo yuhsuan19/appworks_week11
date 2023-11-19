@@ -162,47 +162,47 @@ contract SimpleSwapAddLiquidityAfterInitial is SimpleSwapSetUp {
         vm.stopPrank();
     }
 
-//     function test_addLiquidity_after_swap() public {
-//         address tokenIn = address(tokenA);
-//         address tokenOut = address(tokenB);
-//         uint256 amountIn = 45 * (10 ** tokenADecimals);
-//         uint256 reserveAAfterSwap;
-//         uint256 reserveBAfterSwap;
+    function test_addLiquidity_after_swap() public {
+        address tokenIn = address(tokenA);
+        address tokenOut = address(tokenB);
+        uint256 amountIn = 45 * (10 ** tokenADecimals);
+        uint256 reserveAAfterSwap;
+        uint256 reserveBAfterSwap;
 
-//         vm.startPrank(maker);
-//         simpleSwap.swap(tokenIn, tokenOut, amountIn);
-//         (reserveAAfterSwap, reserveBAfterSwap) = simpleSwap.getReserves();
+        vm.startPrank(maker);
+        simpleSwap.swap(tokenIn, tokenOut, amountIn);
+        (reserveAAfterSwap, reserveBAfterSwap) = simpleSwap.getReserves();
 
-//         uint256 amountA = 18 * 10 ** tokenADecimals;
-//         uint256 amountB = 2 * 10 ** tokenBDecimals;
-//         uint256 totalSupply = simpleSwap.totalSupply();
+        uint256 amountA = 18 * 10 ** tokenADecimals;
+        uint256 amountB = 2 * 10 ** tokenBDecimals;
+        uint256 totalSupply = simpleSwap.totalSupply();
 
-//         {
-//             uint256 makerBalanceABefore = tokenA.balanceOf(maker);
-//             uint256 makerBalanceBBefore = tokenB.balanceOf(maker);
-//             uint256 simpleSwapBalanceABefore = tokenA.balanceOf(address(simpleSwap));
-//             uint256 simpleSwapBalanceBBefore = tokenB.balanceOf(address(simpleSwap));
+        {
+            uint256 makerBalanceABefore = tokenA.balanceOf(maker);
+            uint256 makerBalanceBBefore = tokenB.balanceOf(maker);
+            uint256 simpleSwapBalanceABefore = tokenA.balanceOf(address(simpleSwap));
+            uint256 simpleSwapBalanceBBefore = tokenB.balanceOf(address(simpleSwap));
 
-//             uint256 liquidityA = (amountA * totalSupply) / reserveAAfterSwap;
-//             uint256 liquidityB = (amountB * totalSupply) / reserveBAfterSwap;
-//             uint256 liquidity = (liquidityA < liquidityB) ? liquidityA : liquidityB;
+            uint256 liquidityA = (amountA * totalSupply) / reserveAAfterSwap;
+            uint256 liquidityB = (amountB * totalSupply) / reserveBAfterSwap;
+            uint256 liquidity = (liquidityA < liquidityB) ? liquidityA : liquidityB;
 
-//             vm.expectEmit(true, true, true, true);
-//             emit AddLiquidity(maker, amountA, amountB, liquidity);
-//             simpleSwap.addLiquidity(amountA, amountB);
-//             assertEq(tokenA.balanceOf(maker), makerBalanceABefore - amountA);
-//             assertEq(tokenB.balanceOf(maker), makerBalanceBBefore - amountB);
-//             assertEq(tokenA.balanceOf(address(simpleSwap)), simpleSwapBalanceABefore + amountA);
-//             assertEq(tokenB.balanceOf(address(simpleSwap)), simpleSwapBalanceBBefore + amountB);
-//         }
+            vm.expectEmit(true, true, true, true);
+            emit AddLiquidity(maker, amountA, amountB, liquidity);
+            simpleSwap.addLiquidity(amountA, amountB);
+            assertEq(tokenA.balanceOf(maker), makerBalanceABefore - amountA);
+            assertEq(tokenB.balanceOf(maker), makerBalanceBBefore - amountB);
+            assertEq(tokenA.balanceOf(address(simpleSwap)), simpleSwapBalanceABefore + amountA);
+            assertEq(tokenB.balanceOf(address(simpleSwap)), simpleSwapBalanceBBefore + amountB);
+        }
 
-//         uint256 reserveA;
-//         uint256 reserveB;
-//         (reserveA, reserveB) = simpleSwap.getReserves();
-//         assertEq(reserveA, reserveAAfterSwap + amountA);
-//         assertEq(reserveB, reserveBAfterSwap + amountB);
-//         vm.stopPrank();
-//     }
+        uint256 reserveA;
+        uint256 reserveB;
+        (reserveA, reserveB) = simpleSwap.getReserves();
+        assertEq(reserveA, reserveAAfterSwap + amountA);
+        assertEq(reserveB, reserveBAfterSwap + amountB);
+        vm.stopPrank();
+    }
 }
 
 contract SimpleSwapRemoveLiquidity is SimpleSwapSetUp {
@@ -248,30 +248,30 @@ contract SimpleSwapRemoveLiquidity is SimpleSwapSetUp {
         vm.stopPrank();
     }
 
-    // function test_removeLiquidity_after_swap() public {
-    //     vm.prank(taker);
-    //     simpleSwap.swap(address(tokenA), address(tokenB), 10 * (10 ** tokenADecimals));
+    function test_removeLiquidity_after_swap() public {
+        vm.prank(taker);
+        simpleSwap.swap(address(tokenA), address(tokenB), 10 * (10 ** tokenADecimals));
 
-    //     uint256 lpTokenAmount = 10 * 10 ** slpDecimals;
-    //     uint256 reserveA;
-    //     uint256 reserveB;
-    //     (reserveA, reserveB) = simpleSwap.getReserves();
-    //     uint256 totalSupply = simpleSwap.totalSupply();
-    //     uint256 amountA = (lpTokenAmount * reserveA) / totalSupply;
-    //     uint256 amountB = (lpTokenAmount * reserveB) / totalSupply;
+        uint256 lpTokenAmount = 10 * 10 ** slpDecimals;
+        uint256 reserveA;
+        uint256 reserveB;
+        (reserveA, reserveB) = simpleSwap.getReserves();
+        uint256 totalSupply = simpleSwap.totalSupply();
+        uint256 amountA = (lpTokenAmount * reserveA) / totalSupply;
+        uint256 amountB = (lpTokenAmount * reserveB) / totalSupply;
 
-    //     uint256 makerBalanceABefore = tokenA.balanceOf(maker);
-    //     uint256 makerBalanceBBefore = tokenB.balanceOf(maker);
-    //     uint256 simpleSwapBalanceABefore = tokenA.balanceOf(address(simpleSwap));
-    //     uint256 simpleSwapBalanceBBefore = tokenB.balanceOf(address(simpleSwap));
+        uint256 makerBalanceABefore = tokenA.balanceOf(maker);
+        uint256 makerBalanceBBefore = tokenB.balanceOf(maker);
+        uint256 simpleSwapBalanceABefore = tokenA.balanceOf(address(simpleSwap));
+        uint256 simpleSwapBalanceBBefore = tokenB.balanceOf(address(simpleSwap));
 
-    //     vm.startPrank(maker);
-    //     emit RemoveLiquidity(maker, amountA, amountB, lpTokenAmount);
-    //     simpleSwap.removeLiquidity(lpTokenAmount);
-    //     assertEq(tokenA.balanceOf(maker), makerBalanceABefore + amountA);
-    //     assertEq(tokenB.balanceOf(maker), makerBalanceBBefore + amountB);
-    //     assertEq(tokenA.balanceOf(address(simpleSwap)), simpleSwapBalanceABefore - amountA);
-    //     assertEq(tokenB.balanceOf(address(simpleSwap)), simpleSwapBalanceBBefore - amountB);
-    //     vm.stopPrank();
-    // }
+        vm.startPrank(maker);
+        emit RemoveLiquidity(maker, amountA, amountB, lpTokenAmount);
+        simpleSwap.removeLiquidity(lpTokenAmount);
+        assertEq(tokenA.balanceOf(maker), makerBalanceABefore + amountA);
+        assertEq(tokenB.balanceOf(maker), makerBalanceBBefore + amountB);
+        assertEq(tokenA.balanceOf(address(simpleSwap)), simpleSwapBalanceABefore - amountA);
+        assertEq(tokenB.balanceOf(address(simpleSwap)), simpleSwapBalanceBBefore - amountB);
+        vm.stopPrank();
+    }
 }
