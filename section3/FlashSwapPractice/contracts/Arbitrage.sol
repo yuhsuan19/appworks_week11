@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+import "forge-std/Test.sol";
+
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { IUniswapV2Pair } from "v2-core/interfaces/IUniswapV2Pair.sol";
@@ -27,7 +29,25 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
     //
 
     function uniswapV2Call(address sender, uint256 amount0, uint256 amount1, bytes calldata data) external override {
-        // TODO
+        (uint256 borrowETH, uint256 usdcToRepay, address priceLowerPool, address priceHigherPool) = abi.decode(data, (uint256, uint256, address, address));
+        require(msg.sender == priceLowerPool);
+        require(sender == address(this));
+        require(amount0 > 0 || amount1 >0);
+
+        (uint256 reserveWETH, uint256 reserveUSDC,) = IUniswapV2Pair(priceHigherPool).getReserves();
+        uint256 usdcOut = _getAmountOut(borrowETH, reserveWETH, reserveUSDC);
+        
+        address wETH = IUniswapV2Pair(priceHigherPool).token0();
+        IERC20(wETH).transfer(priceHigherPool, borrowETH);
+        IUniswapV2Pair(priceHigherPool).swap(
+            0, 
+            usdcOut, 
+            address(this), 
+            ""
+        );
+
+        address usdc = IUniswapV2Pair(priceLowerPool).token1();
+        IERC20(usdc).transfer(priceLowerPool, usdcToRepay);
     }
 
     // Method 1 is
@@ -40,7 +60,15 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
     //  - repay WETH to higher pool
     // for testing convenient, we implement the method 1 here
     function arbitrage(address priceLowerPool, address priceHigherPool, uint256 borrowETH) external {
-        // TODO
+        (uint256 reserveWETH, uint256 reserveUSDC,) = IUniswapV2Pair(priceLowerPool).getReserves();
+        uint256 usdcToRepay = _getAmountIn(borrowETH, reserveUSDC, reserveWETH);
+
+        IUniswapV2Pair(priceLowerPool).swap(
+            borrowETH, 
+            0, 
+            address(this), 
+            abi.encode(borrowETH, usdcToRepay, priceLowerPool, priceHigherPool)
+        );
     }
 
     //
@@ -74,3 +102,5 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
         amountOut = numerator / denominator;
     }
 }
+
+
